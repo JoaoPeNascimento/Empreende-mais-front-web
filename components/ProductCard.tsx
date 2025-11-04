@@ -4,22 +4,18 @@ import { Button } from "./ui/button";
 import { ShoppingCartIcon, StarIcon } from "lucide-react";
 import { Badge } from "./ui/badge";
 import Link from "next/link";
+import { useCartStore } from "@/store/useCartStore";
 
 interface ProductProps {
   id: number;
   name: string;
   price: number;
   imageUrl: string;
-  onAddToCart: () => void;
 }
 
-const ProductCard = ({
-  id,
-  name,
-  price,
-  imageUrl,
-  onAddToCart,
-}: ProductProps) => {
+const ProductCard = ({ id, name, price, imageUrl }: ProductProps) => {
+  const addToCart = useCartStore((state) => state.addToCart);
+
   return (
     <Card className="py-1 w-fit">
       <CardContent>
@@ -54,7 +50,14 @@ const ProductCard = ({
           <Button
             variant={"outline"}
             className="border-2"
-            onClick={onAddToCart}
+            onClick={() =>
+              addToCart({
+                id,
+                name,
+                price,
+                imageUrl,
+              })
+            }
           >
             <ShoppingCartIcon />
           </Button>

@@ -6,12 +6,13 @@ import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useCartStore } from "@/store/useCartStore";
 import { Inventory } from "@/types/types";
-import { ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const [items, setItems] = useState<Inventory[]>([]);
+  const cart = useCartStore((state) => state.cart);
 
   useEffect(() => {
     async function loadInventory() {
@@ -57,18 +58,17 @@ export default function Home() {
             name={item.product.nome}
             price={item.product.precoVenda}
             imageUrl={item.product.imagesUrl[0] || "/placeholder.png"}
-            onAddToCart={() => {
-              console.log(`Adicionar ao carrinho: ${item.product.nome}`);
-            }}
           />
         ))}
       </div>
 
       {/* Botão flutuante (só aparece quando tiver itens no carrinho) */}
-      <FloattingButton
-        text="Ir para o carrinho"
-        onPress={() => "Redirecionando para o carrinho"}
-      />
+      {cart.length > 0 && (
+        <FloattingButton
+          text={`Ir para o carrinho (${cart.length})`}
+          onPress={() => console.log(cart)}
+        />
+      )}
     </div>
   );
 }

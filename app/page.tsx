@@ -1,6 +1,7 @@
 "use client";
 
 import { fetchInventory } from "@/api/inventoryService";
+import FloattingButton from "@/components/FloattingButton";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
@@ -64,11 +65,10 @@ export default function Home() {
       </div>
 
       {/* Botão flutuante (só aparece quando tiver itens no carrinho) */}
-      <div className="justify-center flex">
-        <Button className="w-11/12 h-12 bg-[#6C4732] text-white fixed bottom-2 z-10 shadow-lg shadow-black/20">
-          Ir para o Carrinho <ShoppingCart />
-        </Button>
-      </div>
+      <FloattingButton
+        text="Ir para o carrinho"
+        onPress={() => "Redirecionando para o carrinho"}
+      />
     </div>
   );
 }

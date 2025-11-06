@@ -4,16 +4,18 @@ import { fetchInventory } from "@/api/inventoryService";
 import FloattingButton from "@/components/FloattingButton";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/store/useCartStore";
 import { Inventory } from "@/types/types";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [items, setItems] = useState<Inventory[]>([]);
   const [search, setSearch] = useState("");
   const cart = useCartStore((state) => state.cart);
+
+  const router = useRouter();
 
   useEffect(() => {
     async function loadInventory() {
@@ -43,7 +45,7 @@ export default function Home() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           {["Masculino", "Feminino", "Infantil"].map((label) => (
             <Button
               key={label}
@@ -53,7 +55,7 @@ export default function Home() {
               {label}
             </Button>
           ))}
-        </div>
+        </div> */}
       </div>
 
       {/* Itens em catalogo */}
@@ -73,7 +75,7 @@ export default function Home() {
       {cart.length > 0 && (
         <FloattingButton
           text={`Ir para o carrinho (${cart.length})`}
-          onPress={() => console.log(cart)}
+          onPress={() => router.push("/checkout")}
         />
       )}
     </div>

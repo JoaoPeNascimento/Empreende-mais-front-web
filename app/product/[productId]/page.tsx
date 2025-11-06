@@ -8,37 +8,49 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import FloattingButton from "@/components/FloattingButton";
 import { StarIcon } from "lucide-react";
+import { useCartStore } from "@/store/useCartStore";
 
 export default function ProductPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ productId: string }>;
 }) {
-  const { id } = use(params);
+  const { productId } = use(params);
   const [product, setProduct] = useState<Product | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const cart = useCartStore((state) => state.cart);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   useEffect(() => {
     async function loadProduct() {
       try {
-        const data = await fetchProductById(Number(id));
+        const data = await fetchProductById(Number(productId));
         setProduct(data);
       } catch (err) {
         setError("Erro ao carregar o produto." + err);
       }
     }
     loadProduct();
-  }, [id]);
+  }, [productId]);
 
   if (error) return <p className="text-red-500">Erro: {error}</p>;
   if (!product) return <p>Carregando produto...</p>;
+  const { id, nome, precoVenda, imagesUrl } = product;
 
   return (
     <div className="bg-[#F8F5F0] min-h-screen">
       <Header />
       <FloattingButton
         text="Adicionar ao Carrinho"
-        onPress={() => "Adicionado ao carrinho"}
+        onPress={() => {
+          addToCart({
+            id,
+            name: nome,
+            price: precoVenda,
+            imageUrl: imagesUrl[0] || "/placeholder.png",
+          });
+          console.log(cart);
+        }}
       />
       <div className="px-2 mt-4">
         <Image

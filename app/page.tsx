@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [items, setItems] = useState<Inventory[]>([]);
+  const [search, setSearch] = useState("");
   const cart = useCartStore((state) => state.cart);
 
   useEffect(() => {
@@ -26,6 +27,10 @@ export default function Home() {
     loadInventory();
   }, []);
 
+  const filteredItems = items.filter((item) => {
+    return item.product.nome.toLowerCase().includes(search.toLowerCase());
+  });
+
   return (
     <div className="bg-[#F8F5F0] relative min-h-screen">
       <Header />
@@ -35,6 +40,8 @@ export default function Home() {
         <Input
           placeholder="Pesquisa"
           className="border-[#6C4732] text-[#AF8F7D]"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <div className="flex gap-2">
           {["Masculino", "Feminino", "Infantil"].map((label) => (
@@ -51,7 +58,7 @@ export default function Home() {
 
       {/* Itens em catalogo */}
       <div className="grid grid-cols-2 gap-4 px-2 m-4">
-        {items.map((item) => (
+        {filteredItems.map((item) => (
           <ProductCard
             key={item.product.id}
             id={item.product.id}

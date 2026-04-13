@@ -1,9 +1,8 @@
 import { Inventory } from "@/types/types";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { buildApiUrl } from "./http";
 
 export const fetchInventory = async (): Promise<Inventory[]> => {
-  const response = await fetch(`${API_URL}api/v1/inventory`);
+  const response = await fetch(buildApiUrl("/api/v1/inventory"));
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar estoque: ${response.statusText}`);

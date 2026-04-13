@@ -24,6 +24,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import { useAuthStore } from "@/store/useAuthStore";
+
 const WHATSAPP_NUMBER = "558199025395";
 const ADDRESS = "Av. Presidente Kennedy, 31 - São Benedito, Olinda - PE";
 const MAPS_QUERY = "Av. Presidente Kennedy, 31 - São Benedito, Olinda - PE";
@@ -103,6 +105,18 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("todos");
   const router = useRouter();
   const cart = useCartStore((state) => state.cart);
+  const session = useAuthStore((state) => state.session);
+  const clearSession = useAuthStore((state) => state.clearSession);
+
+  const handleAuthAction = () => {
+    if (session) {
+      clearSession();
+      router.replace("/login");
+      return;
+    }
+
+    router.push("/login");
+  };
 
   useEffect(() => {
     async function loadInventory() {
@@ -237,12 +251,33 @@ export default function Home() {
             </Link>
           </nav>
 
-          <Button asChild className="hidden rounded-full bg-[var(--primary)] px-5 text-white shadow-[0_18px_40px_rgba(108,71,50,0.22)] md:inline-flex">
-            <a href={createWhatsAppLink()} target="_blank" rel="noreferrer">
-              <MessageCircle className="size-4" />
-              Fale no WhatsApp
-            </a>
-          </Button>
+          <div className="hidden items-center gap-3 md:flex">
+            {session ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full border-[var(--line-strong)] bg-white/80 px-5 text-[var(--primary)] shadow-sm hover:bg-white"
+                onClick={handleAuthAction}
+              >
+                Sair
+              </Button>
+            ) : (
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full border-[var(--line-strong)] bg-white/80 px-5 text-[var(--primary)] shadow-sm hover:bg-white"
+              >
+                <Link href="/login">Entrar</Link>
+              </Button>
+            )}
+
+            <Button asChild className="rounded-full bg-[var(--primary)] px-5 text-white shadow-[0_18px_40px_rgba(108,71,50,0.22)]">
+              <a href={createWhatsAppLink()} target="_blank" rel="noreferrer">
+                <MessageCircle className="size-4" />
+                Fale no WhatsApp
+              </a>
+            </Button>
+          </div>
         </div>
 
         <div className="flex gap-5 overflow-x-auto border-t border-[var(--line)] px-4 py-3 text-sm font-medium text-[var(--muted-ink)] md:hidden">
@@ -250,6 +285,17 @@ export default function Home() {
           <Link href="#catalogo">Catálogo</Link>
           <Link href="#localizacao">Localização</Link>
           <Link href="#contato">Contato</Link>
+          {session ? (
+            <button
+              type="button"
+              className="bg-transparent p-0 transition hover:text-[var(--primary)]"
+              onClick={handleAuthAction}
+            >
+              Sair
+            </button>
+          ) : (
+            <Link href="/login">Entrar</Link>
+          )}
         </div>
       </header>
 

@@ -1,5 +1,16 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Variables
+
+Create a `.env.local` file with the public values used by the front:
+
+```bash
+NEXT_PUBLIC_API_URL=https://sua-api.exemplo.com
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=sua-site-key-publica
+```
+
+The reCAPTCHA secret key stays only on the backend. If the backend uses reCAPTCHA v3, keep `RECAPTCHA_SECRET_KEY` and `RECAPTCHA_MIN_SCORE` there as private environment variables.
+
 ## Getting Started
 
 First, run the development server:

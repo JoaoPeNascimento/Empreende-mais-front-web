@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  GoogleReCaptchaProvider,
-  useGoogleReCaptcha,
-} from "react-google-recaptcha-v3";
+import ReCAPTCHA from "react-google-recaptcha";
 import { Loader2, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 
 import { login } from "@/api/authService";
@@ -30,16 +27,15 @@ const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 function LoginForm() {
   const router = useRouter();
-  const { executeRecaptcha } = useGoogleReCaptcha();
+  const recaptchaRef = useRef<ReCAPTCHA | null>(null);
   const setSession = useAuthStore((state) => state.setSession);
   const [formState, setFormState] = useState<LoginFormState>({
     email: "",
     senha: "",
   });
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const isRecaptchaReady = Boolean(executeRecaptcha);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -54,21 +50,14 @@ function LoginForm() {
     event.preventDefault();
     setErrorMessage(null);
 
-    if (!executeRecaptcha) {
-      setErrorMessage("O reCAPTCHA ainda não terminou de carregar.");
+    if (!recaptchaToken) {
+      setErrorMessage("Confirme o reCAPTCHA antes de continuar.");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const recaptchaToken = await executeRecaptcha("login");
-
-      if (!recaptchaToken) {
-        setErrorMessage("Não foi possível gerar o token do reCAPTCHA.");
-        return;
-      }
-
       const response = await login({
         email: formState.email.trim(),
         senha: formState.senha,
@@ -78,6 +67,8 @@ function LoginForm() {
       setSession(response);
       router.replace("/");
     } catch (error) {
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
       setErrorMessage(
         error instanceof Error ? error.message : "Não foi possível concluir o login."
       );
@@ -139,17 +130,28 @@ function LoginForm() {
             />
           </div>
 
+          <div className="rounded-2xl border border-[#E8DDD3] bg-white p-3 shadow-sm">
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={recaptchaSiteKey ?? ""}
+              onChange={(token) => {
+                setRecaptchaToken(token);
+
+                if (token) {
+                  setErrorMessage(null);
+                }
+              }}
+              onExpired={() => setRecaptchaToken(null)}
+            />
+          </div>
+
           <Button
             type="submit"
             className="h-12 w-full rounded-full bg-[var(--primary)] text-white shadow-[0_18px_40px_rgba(108,71,50,0.22)] hover:bg-[var(--primary-dark)]"
-            disabled={isSubmitting || !isRecaptchaReady}
+            disabled={isSubmitting || !recaptchaToken}
           >
             {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <LockKeyhole className="size-4" />}
-            {isSubmitting
-              ? "Validando acesso..."
-              : isRecaptchaReady
-                ? "Entrar"
-                : "Carregando reCAPTCHA..."}
+            {isSubmitting ? "Validando acesso..." : "Entrar"}
           </Button>
         </form>
 
@@ -170,7 +172,7 @@ function LoginForm() {
 
 function LoginHero() {
   const highlights = [
-    "Token gerado no navegador antes do POST",
+    "Desafio visual exibido no formulário",
     "Secret key permanece somente no backend",
     "Compatível com `NEXT_PUBLIC_API_URL` e `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`",
   ];
@@ -180,14 +182,14 @@ function LoginHero() {
       <div className="space-y-4">
         <Badge className="w-fit border border-white/20 bg-white/10 px-3 py-1 text-white hover:bg-white/10">
           <Sparkles className="size-3.5" />
-          Login com reCAPTCHA v3
+          Login com reCAPTCHA visível
         </Badge>
         <h1 className="font-[family-name:var(--font-display)] text-5xl leading-[0.95] sm:text-6xl">
           Proteção pensada para o fluxo real do cliente.
         </h1>
         <p className="max-w-xl text-lg leading-8 text-white/78">
-          A página gera o token no navegador, envia o payload com o email e a senha e mantém
-          as credenciais sensíveis apenas no backend.
+          A página só permite enviar o login após o desafio de validação humana no navegador,
+          mantendo as credenciais sensíveis apenas no backend.
         </p>
       </div>
 
@@ -236,13 +238,11 @@ export default function LoginPage() {
   }
 
   return (
-    <GoogleReCaptchaProvider reCaptchaKey={recaptchaSiteKey} scriptProps={{ async: true, defer: true }}>
-      <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(108,71,50,0.18),_transparent_34%),linear-gradient(180deg,_#5f3d2b_0%,_#3d251a_100%)] px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <LoginHero />
-          <LoginForm />
-        </div>
-      </main>
-    </GoogleReCaptchaProvider>
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(108,71,50,0.18),_transparent_34%),linear-gradient(180deg,_#5f3d2b_0%,_#3d251a_100%)] px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+        <LoginHero />
+        <LoginForm />
+      </div>
+    </main>
   );
 }

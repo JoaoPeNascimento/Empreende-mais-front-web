@@ -11,6 +11,9 @@ NEXT_PUBLIC_RECAPTCHA_SITE_KEY=sua-site-key-publica
 
 The reCAPTCHA secret key stays only on the backend. If the backend uses reCAPTCHA v3, keep `RECAPTCHA_SECRET_KEY` and `RECAPTCHA_MIN_SCORE` there as private environment variables.
 
+This frontend currently renders the visible reCAPTCHA challenge (checkbox/image flow) before login.
+If your backend was configured for v3 score validation, adjust the verification logic to accept v2 checkbox tokens.
+
 ## Getting Started
 
 First, run the development server:

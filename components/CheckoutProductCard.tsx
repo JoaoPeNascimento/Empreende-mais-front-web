@@ -1,12 +1,14 @@
 import Image from "next/image";
-import { Card, CardContent } from "./ui/card";
 import Link from "next/link";
+import { Trash2 } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface CheckoutProductProps {
   id: number;
   name: string;
   price: number;
   imageUrl: string;
+  onRemove?: () => void;
 }
 
 const CheckoutProductCard = ({
@@ -14,27 +16,37 @@ const CheckoutProductCard = ({
   name,
   imageUrl,
   price,
+  onRemove,
 }: CheckoutProductProps) => {
+  const formattedPrice = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(price);
+
   return (
-    <Card className="py-1 px-2">
-      <CardContent className="h-fit">
-        <Link href={`/product/${id}`}>
-          <div className="flex">
-            <Image
-              src={imageUrl}
-              alt={name}
-              width={80}
-              height={80}
-              className="rounded-lg"
-            />
-            <div>
-              <h1 className="font-medium text-xl text-[#4A2E1E]">{name}</h1>
-              <h2 className="text-[#5C4033] font-semibold">R$ {price}</h2>
-            </div>
-          </div>
-        </Link>
-      </CardContent>
-    </Card>
+    <article className="group grid grid-cols-[88px_1fr_auto] gap-4 rounded-xl border border-[var(--line)] bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(51,38,31,0.1)]">
+      <Link href={`/product/${id}`} className="relative aspect-square overflow-hidden rounded-lg bg-[var(--highlight)]">
+        <Image src={imageUrl} alt={name} fill className="object-cover transition duration-500 group-hover:scale-105" sizes="88px" />
+      </Link>
+
+      <Link href={`/product/${id}`} className="min-w-0 self-center">
+        <h2 className="line-clamp-2 text-base font-semibold text-[var(--ink)]">{name}</h2>
+        <p className="mt-1 text-lg font-semibold text-[var(--primary)]">{formattedPrice}</p>
+      </Link>
+
+      {onRemove ? (
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="self-center rounded-full border-[var(--line-strong)] bg-white text-[var(--muted-ink)] hover:bg-[#fff3f3] hover:text-[#a63b3b]"
+          onClick={onRemove}
+          aria-label={`Remover ${name}`}
+        >
+          <Trash2 className="size-4" />
+        </Button>
+      ) : null}
+    </article>
   );
 };
 

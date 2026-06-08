@@ -1,17 +1,25 @@
 "use client";
 
-import { use } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, MessageCircle, ShoppingBag, StarIcon } from "lucide-react";
-import { fetchProductById } from "../../../api/productService";
-import { Product } from "../../../types/types";
-import Header from "@/components/Header";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  MapPin,
+  MessageCircle,
+  ShieldCheck,
+  ShoppingBag,
+  StarIcon,
+} from "lucide-react";
+
+import { fetchProductById } from "@/api/productService";
 import FloattingButton from "@/components/FloattingButton";
+import Header from "@/components/Header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/useCartStore";
+import { Product } from "@/types/types";
 
 const formatPrice = (value: number) =>
   new Intl.NumberFormat("pt-BR", {
@@ -31,6 +39,7 @@ export default function ProductPage({
 }) {
   const { productId } = use(params);
   const [product, setProduct] = useState<Product | null>(null);
+  const [selectedImage, setSelectedImage] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const addToCart = useCartStore((state) => state.addToCart);
 
@@ -40,7 +49,7 @@ export default function ProductPage({
         const data = await fetchProductById(Number(productId));
         setProduct(data);
       } catch (err) {
-        setError("Erro ao carregar o produto. " + err);
+        setError(err instanceof Error ? err.message : "Erro ao carregar o produto.");
       }
     }
 
@@ -50,15 +59,40 @@ export default function ProductPage({
   const sizes = useMemo(() => ["P", "M", "G", "GG"], []);
 
   if (error) {
-    return <p className="px-4 py-10 text-red-500">Erro: {error}</p>;
+    return (
+      <div className="min-h-screen bg-[var(--bg-soft)]">
+        <Header />
+        <main className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6">
+          <p className="rounded-xl border border-[#f0b7b7] bg-[#fff3f3] px-5 py-4 text-sm text-[#a63b3b]">
+            Erro ao carregar o produto: {error}
+          </p>
+          <Button asChild className="mt-6 rounded-full bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)]">
+            <Link href="/#catalogo">Voltar ao catálogo</Link>
+          </Button>
+        </main>
+      </div>
+    );
   }
 
   if (!product) {
-    return <p className="px-4 py-10 text-[#6C4732]">Carregando produto...</p>;
+    return (
+      <div className="min-h-screen bg-[var(--bg-soft)]">
+        <Header />
+        <main className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
+          <div className="aspect-[4/5] animate-pulse rounded-xl bg-white" />
+          <div className="space-y-4">
+            <div className="h-10 w-36 animate-pulse rounded-full bg-white" />
+            <div className="h-16 w-full animate-pulse rounded-xl bg-white" />
+            <div className="h-40 w-full animate-pulse rounded-xl bg-white" />
+          </div>
+        </main>
+      </div>
+    );
   }
 
   const { id, nome, precoVenda, imagesUrl } = product;
-  const primaryImage = imagesUrl[0] || "/logo.svg";
+  const gallery = imagesUrl.length > 0 ? imagesUrl : ["/logo.svg"];
+  const primaryImage = gallery[selectedImage] || gallery[0];
 
   const addCurrentProductToCart = () => {
     addToCart({
@@ -70,61 +104,80 @@ export default function ProductPage({
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F5F0]">
+    <div className="min-h-screen bg-[var(--bg-soft)] text-[var(--ink)]">
       <Header />
-
       <FloattingButton text="Adicionar ao carrinho" onPress={addCurrentProductToCart} />
 
-      <div className="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:px-8">
-        <div className="mb-4">
-          <Link
-            href="/"
-            className="text-sm font-medium text-[#8D6F5C] transition hover:text-[#6C4732]"
-          >
-            Voltar ao catálogo
-          </Link>
-        </div>
+      <main className="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:px-8">
+        <Link
+          href="/#catalogo"
+          className="inline-flex items-center gap-2 text-sm font-medium text-[var(--muted-ink)] transition hover:text-[var(--primary)]"
+        >
+          <ArrowLeft className="size-4" />
+          Voltar ao catálogo
+        </Link>
 
-        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-          <div className="overflow-hidden rounded-[2rem] border border-[#E8DDD3] bg-[#FFFDFC] p-3 shadow-[0_18px_40px_rgba(108,71,50,0.08)]">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[1.6rem] bg-[#EFE4DB]">
-              <Image
-                src={primaryImage}
-                alt={product.nome}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 48vw"
-              />
+        <section className="mt-6 grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+          <div className="space-y-4">
+            <div className="overflow-hidden rounded-xl border border-[var(--line)] bg-white p-3 shadow-[0_18px_42px_rgba(51,38,31,0.1)]">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-[var(--highlight)]">
+                <Image
+                  src={primaryImage}
+                  alt={product.nome}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 48vw"
+                  priority
+                />
+              </div>
             </div>
+
+            {gallery.length > 1 ? (
+              <div className="grid grid-cols-4 gap-3">
+                {gallery.slice(0, 4).map((image, index) => (
+                  <button
+                    key={image}
+                    type="button"
+                    className={`relative aspect-square overflow-hidden rounded-lg border bg-white transition ${
+                      selectedImage === index
+                        ? "border-[var(--accent)] ring-2 ring-[color:rgba(47,125,115,0.2)]"
+                        : "border-[var(--line)] hover:border-[var(--line-strong)]"
+                    }`}
+                    onClick={() => setSelectedImage(index)}
+                    aria-label={`Ver imagem ${index + 1}`}
+                  >
+                    <Image src={image} alt="" fill className="object-cover" sizes="120px" />
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
 
-          <div className="rounded-[2rem] border border-[#E8DDD3] bg-[#FFFDFC] p-6 shadow-[0_18px_40px_rgba(108,71,50,0.08)] lg:sticky lg:top-24">
-            <div className="space-y-5">
+          <aside className="rounded-xl border border-[var(--line)] bg-white p-6 shadow-[0_18px_42px_rgba(51,38,31,0.1)] lg:sticky lg:top-24">
+            <div className="space-y-6">
               <div className="flex flex-wrap items-center gap-3">
-                <Badge className="rounded-full bg-[#EFE4DB] px-4 py-1.5 text-[#6C4732]">
+                <Badge className="rounded-full bg-[var(--highlight)] px-4 py-1.5 text-[var(--accent)]">
                   {product.category?.nome || "Donna Glamour"}
                 </Badge>
-                <div className="flex items-center gap-1 text-sm font-medium text-[#6C4732]">
-                  <StarIcon size={16} className="fill-yellow-500 text-yellow-500" />
+                <div className="flex items-center gap-1 text-sm font-medium text-[var(--primary)]">
+                  <StarIcon size={16} className="fill-[#f0b84f] text-[#f0b84f]" />
                   5,0
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h1 className="font-[family-name:var(--font-display)] text-4xl leading-none text-[#6C4732] sm:text-5xl">
+                <h1 className="font-[family-name:var(--font-display)] text-4xl leading-none text-[var(--primary)] sm:text-5xl">
                   {product.nome}
                 </h1>
-                <p className="text-3xl font-semibold text-[#6C4732]">
-                  {formatPrice(precoVenda)}
-                </p>
-                <p className="leading-7 text-[#7D6658]">
+                <p className="text-3xl font-semibold text-[var(--ink)]">{formatPrice(precoVenda)}</p>
+                <p className="leading-7 text-[var(--muted-ink)]">
                   {product.descricao ||
                     "Peça selecionada para quem busca estilo, praticidade e um look bonito para o dia a dia."}
                 </p>
               </div>
 
-              <div className="rounded-[1.5rem] bg-[#F8F5F0] p-4">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8D6F5C]">
+              <div className="rounded-xl bg-[var(--bg-soft)] p-4">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted-ink)]">
                   Tamanhos
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -132,7 +185,7 @@ export default function ProductPage({
                     <button
                       key={size}
                       type="button"
-                      className="rounded-full border border-[#AF8F7D] px-4 py-2 text-sm font-medium text-[#6C4732] transition hover:bg-[#EFE4DB]"
+                      className="rounded-full border border-[var(--line-strong)] bg-white px-4 py-2 text-sm font-medium text-[var(--primary)] transition hover:border-[var(--accent)] hover:bg-[var(--highlight)]"
                     >
                       {size}
                     </button>
@@ -142,35 +195,48 @@ export default function ProductPage({
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <Button
-                  className="h-12 rounded-full bg-[#6C4732] text-white hover:bg-[#573724]"
+                  className="h-12 rounded-full bg-[var(--primary)] text-white shadow-[0_16px_36px_rgba(51,38,31,0.18)] hover:bg-[var(--primary-dark)]"
                   onClick={addCurrentProductToCart}
                 >
                   <ShoppingBag className="size-4" />
-                  Adicionar ao carrinho
+                  Adicionar
                 </Button>
                 <Button
                   asChild
                   variant="outline"
-                  className="h-12 rounded-full border-[#AF8F7D] bg-white text-[#6C4732] hover:bg-[#F8F5F0]"
+                  className="h-12 rounded-full border-[var(--line-strong)] bg-white text-[var(--primary)] hover:bg-[var(--highlight)]"
                 >
                   <a href={createWhatsAppLink(nome)} target="_blank" rel="noreferrer">
                     <MessageCircle className="size-4" />
-                    Falar no WhatsApp
+                    WhatsApp
                   </a>
                 </Button>
               </div>
 
-              <div className="rounded-[1.5rem] border border-[#E8DDD3] bg-white p-4 text-sm leading-7 text-[#7D6658]">
-                <div className="flex items-center gap-2 font-medium text-[#6C4732]">
-                  <MapPin className="size-4" />
-                  Loja física em Olinda
+              <div className="grid gap-3 text-sm leading-7 text-[var(--muted-ink)]">
+                <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+                  <div className="flex items-center gap-2 font-medium text-[var(--accent)]">
+                    <CheckCircle2 className="size-4" />
+                    Atendimento rápido para tirar dúvidas
+                  </div>
                 </div>
-                <p className="mt-2">Av. Presidente Kennedy, 31 - São Benedito, Olinda - PE</p>
+                <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+                  <div className="flex items-center gap-2 font-medium text-[var(--primary)]">
+                    <ShieldCheck className="size-4" />
+                    Pedido confirmado diretamente com a loja
+                  </div>
+                </div>
+                <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+                  <div className="flex items-center gap-2 font-medium text-[var(--primary)]">
+                    <MapPin className="size-4" />
+                    Av. Presidente Kennedy, 31 - São Benedito, Olinda - PE
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </aside>
+        </section>
+      </main>
     </div>
   );
 }

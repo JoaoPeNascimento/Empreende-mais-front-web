@@ -47,22 +47,22 @@
 :root {
   --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
   --font-body: "Avenir Next", "Nunito Sans", "Trebuchet MS", sans-serif;
-  --radius: 1rem;
-  --background: #f8f5f0;
-  --foreground: #4a2e1e;
-  --card: rgba(255, 251, 247, 0.9);
-  --card-foreground: #4a2e1e;
-  --popover: #fffaf6;
-  --popover-foreground: #4a2e1e;
+  --radius: 0.875rem;
+  --background: #fbfaf7;
+  --foreground: #33261f;
+  --card: rgba(255, 255, 252, 0.94);
+  --card-foreground: #33261f;
+  --popover: #fffffb;
+  --popover-foreground: #33261f;
   --primary: #6c4732;
-  --primary-dark: #573724;
+  --primary-dark: #513324;
   --primary-foreground: #fffaf5;
-  --secondary: #efe4db;
-  --secondary-foreground: #5c4033;
-  --muted: #f2ece4;
-  --muted-foreground: #8d6f5c;
-  --accent: #af8f7d;
-  --accent-foreground: #fffaf5;
+  --secondary: #e8f1ed;
+  --secondary-foreground: #25453d;
+  --muted: #f3f0ea;
+  --muted-foreground: #6f6259;
+  --accent: #2f7d73;
+  --accent-foreground: #f7fffc;
   --destructive: oklch(0.577 0.245 27.325);
   --border: #e8ddd3;
   --input: #e8ddd3;
@@ -80,12 +80,13 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
-  --bg-soft: #f8f5f0;
-  --highlight: #efe4db;
-  --line: rgba(108, 71, 50, 0.14);
-  --line-strong: rgba(108, 71, 50, 0.24);
-  --ink: #4a2e1e;
-  --muted-ink: #7d6658;
+  --bg-soft: #fbfaf7;
+  --highlight: #e8f1ed;
+  --rose: #f4d7cf;
+  --line: rgba(51, 38, 31, 0.12);
+  --line-strong: rgba(51, 38, 31, 0.22);
+  --ink: #33261f;
+  --muted-ink: #6f6259;
 }
 
 .dark {
@@ -134,7 +135,15 @@
   body {
     font-family: var(--font-body);
     @apply bg-background text-foreground;
-    background-image: linear-gradient(180deg, #faf6f1 0%, #f4eee7 100%);
+    background-image:
+      linear-gradient(120deg, rgba(232, 241, 237, 0.65) 0%, rgba(255, 255, 252, 0) 34%),
+      linear-gradient(180deg, #fbfaf7 0%, #f3f0ea 100%);
+    text-rendering: geometricPrecision;
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
   }
 
   ::selection {

@@ -3,6 +3,7 @@
 import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -30,9 +31,15 @@ const formatPrice = (value: number) =>
 const getPriceLabel = (product: Product) =>
   product.precoLabel || formatPrice(product.precoVenda);
 
-const createWhatsAppLink = (productName: string) =>
+const formatProductDetails = (color?: string, size?: string) => {
+  const details = [color ? `cor ${color}` : null, size ? `tamanho ${size}` : null].filter(Boolean).join(", ");
+
+  return details ? ` com ${details}` : "";
+};
+
+const createWhatsAppLink = (productName: string, color?: string, size?: string) =>
   `https://wa.me/558199025395?text=${encodeURIComponent(
-    `Oi! Vim pelo catálogo da Donna Glamour e quero saber mais sobre ${productName}.`
+    `Oi! Vim pelo catálogo da Donna Glamour e quero saber mais sobre ${productName}${formatProductDetails(color, size)}.`
   )}`;
 
 export default function ProductPage({
@@ -44,7 +51,11 @@ export default function ProductPage({
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const cart = useCartStore((state) => state.cart);
   const addToCart = useCartStore((state) => state.addToCart);
+  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selectedColor, setSelectedColor] = useState<string>("");
 
   useEffect(() => {
     async function loadProduct() {
@@ -61,6 +72,8 @@ export default function ProductPage({
 
   const sizes = useMemo(() => product?.tamanhos || [], [product]);
   const colors = useMemo(() => product?.cores || [], [product]);
+  const activeSize = sizes.includes(selectedSize) ? selectedSize : sizes[0] || "";
+  const activeColor = colors.includes(selectedColor) ? selectedColor : colors[0] || "";
 
   if (error) {
     return (
@@ -104,13 +117,27 @@ export default function ProductPage({
       name: nome,
       price: precoVenda,
       imageUrl: primaryImage,
+      size: sizes.length > 0 ? activeSize : undefined,
+      color: colors.length > 0 ? activeColor : undefined,
     });
+  };
+
+  const handleFloatingButton = () => {
+    if (cart.length > 0) {
+      router.push("/checkout");
+      return;
+    }
+
+    addCurrentProductToCart();
   };
 
   return (
     <div className="min-h-screen bg-[var(--bg-soft)] text-[var(--ink)]">
       <Header />
-      <FloattingButton text="Adicionar ao carrinho" onPress={addCurrentProductToCart} />
+      <FloattingButton
+        text={cart.length > 0 ? `Ir para o carrinho (${cart.length})` : "Adicionar ao carrinho"}
+        onPress={handleFloatingButton}
+      />
 
       <main className="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:px-8">
         <Link
@@ -189,12 +216,18 @@ export default function ProductPage({
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {colors.map((color) => (
-                      <span
+                      <button
+                        type="button"
                         key={color}
-                        className="rounded-full border border-[var(--line-strong)] bg-white px-4 py-2 text-sm font-medium text-[var(--primary)]"
+                        className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
+                          activeColor === color
+                            ? "border-[var(--primary)] bg-[var(--primary)] text-white"
+                            : "border-[var(--line-strong)] bg-white text-[var(--primary)] hover:border-[var(--primary)]"
+                        }`}
+                        onClick={() => setSelectedColor(color)}
                       >
                         {color}
-                      </span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -207,12 +240,18 @@ export default function ProductPage({
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {sizes.map((size) => (
-                      <span
+                      <button
+                        type="button"
                         key={size}
-                        className="rounded-full border border-[var(--line-strong)] bg-white px-4 py-2 text-sm font-medium text-[var(--primary)]"
+                        className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
+                          activeSize === size
+                            ? "border-[var(--primary)] bg-[var(--primary)] text-white"
+                            : "border-[var(--line-strong)] bg-white text-[var(--primary)] hover:border-[var(--primary)]"
+                        }`}
+                        onClick={() => setSelectedSize(size)}
                       >
                         {size}
-                      </span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -231,7 +270,7 @@ export default function ProductPage({
                   variant="outline"
                   className="h-12 rounded-full border-[var(--line-strong)] bg-white text-[var(--primary)] hover:bg-[var(--highlight)]"
                 >
-                  <a href={createWhatsAppLink(nome)} target="_blank" rel="noreferrer">
+                  <a href={createWhatsAppLink(nome, activeColor, activeSize)} target="_blank" rel="noreferrer">
                     <MessageCircle className="size-4" />
                     WhatsApp
                   </a>

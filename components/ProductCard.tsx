@@ -56,6 +56,8 @@ const ProductCard = ({ id, name, price, imageUrl }: ProductProps) => {
                 name,
                 price,
                 imageUrl,
+                color: undefined,
+                size: undefined,
               })
             }
           >

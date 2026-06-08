@@ -15,9 +15,17 @@ const formatPrice = (value: number) =>
     currency: "BRL",
   }).format(value);
 
-const buildCheckoutMessage = (items: { name: string; price: number }[]) => {
+const buildCheckoutMessage = (
+  items: { name: string; price: number; color?: string; size?: string }[]
+) => {
   const itemLines = items
-    .map((item) => `- ${item.name} (${formatPrice(item.price)})`)
+    .map((item) => {
+      const details = [item.color ? `cor: ${item.color}` : null, item.size ? `tamanho: ${item.size}` : null]
+        .filter(Boolean)
+        .join(", ");
+
+      return `- ${item.name} (${formatPrice(item.price)})${details ? ` - ${details}` : ""}`;
+    })
     .join("\n");
   const total = items.reduce((sum, item) => sum + item.price, 0);
 
@@ -62,14 +70,16 @@ const Checkout = () => {
 
             {cart.length > 0 ? (
               <div className="space-y-3">
-                {cart.map((item, index) => (
+                {cart.map((item) => (
                   <CheckoutProductCard
-                    key={`${item.id}-${item.name}-${index}`}
+                    key={item.cartItemId}
                     id={item.id}
                     name={item.name}
                     price={item.price}
                     imageUrl={item.imageUrl}
-                    onRemove={() => removeFromCart(item.id)}
+                    color={item.color}
+                    size={item.size}
+                    onRemove={() => removeFromCart(item.cartItemId)}
                   />
                 ))}
               </div>

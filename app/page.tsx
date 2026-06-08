@@ -62,6 +62,9 @@ const formatPrice = (value: number) =>
     currency: "BRL",
   }).format(value);
 
+const getPriceLabel = (item: Inventory) =>
+  item.product.precoLabel || formatPrice(item.product.precoVenda);
+
 const normalizeText = (value?: string | null) =>
   (value || "")
     .normalize("NFD")
@@ -300,32 +303,32 @@ export default function Home() {
       </header>
 
       <main>
-        <section id="topo" className="relative overflow-hidden px-4 pb-16 pt-8 sm:px-6 lg:px-8 lg:pb-24 lg:pt-12">
+        <section id="topo" className="relative overflow-hidden px-4 pb-8 pt-5 sm:px-6 sm:pb-10 lg:px-8 lg:pb-16 lg:pt-10">
           <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(circle_at_top_left,_rgba(239,228,219,0.9),_transparent_38%),radial-gradient(circle_at_top_right,_rgba(175,143,125,0.16),_transparent_24%),linear-gradient(180deg,_rgba(248,245,240,1)_0%,_rgba(244,238,231,0.96)_100%)]" />
-          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-            <div className="space-y-8">
-              <Badge className="rounded-full border border-[var(--line-strong)] bg-white/80 px-4 py-2 text-[11px] uppercase tracking-[0.28em] text-[var(--primary)] shadow-sm">
+          <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.08fr_0.82fr] lg:items-center">
+            <div className="space-y-6 lg:space-y-8">
+              <Badge className="rounded-full border border-[var(--line-strong)] bg-white/80 px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-[var(--primary)] shadow-sm sm:px-4 sm:text-[11px] sm:tracking-[0.28em]">
                 Moda feminina em Olinda, Recife e região
               </Badge>
 
-              <div className="space-y-5">
-                <h1 className="max-w-2xl font-[family-name:var(--font-display)] text-5xl leading-none text-[var(--primary)] sm:text-6xl lg:text-7xl">
+              <div className="space-y-3 sm:space-y-5">
+                <h1 className="max-w-2xl font-[family-name:var(--font-display)] text-3xl leading-none text-[var(--primary)] sm:text-5xl lg:text-6xl">
                   Moda feminina com estilo e leveza.
                 </h1>
-                <p className="max-w-xl text-base leading-7 text-[var(--muted-ink)] sm:text-lg">
+                <p className="max-w-xl text-sm leading-6 text-[var(--muted-ink)] sm:text-lg sm:leading-7">
                   Looks modernos, peças especiais e atendimento rápido para você
                   escolher com calma e falar com a loja quando quiser.
                 </p>
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild size="lg" className="h-12 rounded-full bg-[var(--primary)] px-6 text-white shadow-[0_20px_45px_rgba(108,71,50,0.24)] hover:bg-[var(--primary-dark)]">
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
+                <Button asChild size="lg" className="h-11 rounded-full bg-[var(--primary)] px-4 text-white shadow-[0_20px_45px_rgba(108,71,50,0.24)] hover:bg-[var(--primary-dark)] sm:h-12 sm:px-6">
                   <a href={createWhatsAppLink()} target="_blank" rel="noreferrer">
                     <MessageCircle className="size-4" />
                     Fale no WhatsApp
                   </a>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="h-12 rounded-full border-[var(--line-strong)] bg-white/80 px-6 text-[var(--primary)] shadow-sm hover:bg-white">
+                <Button asChild size="lg" variant="outline" className="h-11 rounded-full border-[var(--line-strong)] bg-white/80 px-4 text-[var(--primary)] shadow-sm hover:bg-white sm:h-12 sm:px-6">
                   <Link href="#catalogo">
                     <Sparkles className="size-4" />
                     Ver peças
@@ -333,7 +336,7 @@ export default function Home() {
                 </Button>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="hidden gap-3 sm:grid sm:grid-cols-3">
                 <div className="rounded-[1.6rem] border border-white/70 bg-white/75 p-4 shadow-[0_18px_35px_rgba(108,71,50,0.08)] backdrop-blur">
                   <Clock3 className="mb-3 size-5 text-[var(--accent)]" />
                   <p className="text-sm font-semibold text-[var(--primary)]">Atendimento rápido</p>
@@ -352,21 +355,32 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative hidden lg:block">
               <div className="absolute -right-4 top-10 h-32 w-32 rounded-full bg-[#CBB6A8]/40 blur-3xl" />
               <div className="absolute -left-6 bottom-10 h-40 w-40 rounded-full bg-[#AF8F7D]/25 blur-3xl" />
 
-              <div className="relative rounded-[2rem] border border-white/80 bg-white/72 p-4 shadow-[0_24px_70px_rgba(108,71,50,0.14)] backdrop-blur-xl">
+              <div className="relative mx-auto max-w-[430px] rounded-[1.5rem] border border-white/80 bg-white/72 p-3 shadow-[0_24px_70px_rgba(108,71,50,0.14)] backdrop-blur-xl">
                 <div className="grid gap-4">
-                  <div className="relative min-h-[420px] overflow-hidden rounded-[1.7rem] bg-[#EFE4DB]">
+                  <div className="relative h-[500px] overflow-hidden rounded-[1.2rem] bg-[#EFE4DB]">
                     {heroImages[0] ? (
-                      <Image
-                        src={heroImages[0]}
-                        alt="Destaque Donna Glamour"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 40vw"
-                      />
+                      <>
+                        <Image
+                          src={heroImages[0]}
+                          alt=""
+                          fill
+                          className="scale-110 object-cover opacity-35 blur-xl"
+                          sizes="(max-width: 768px) 100vw, 40vw"
+                          aria-hidden="true"
+                        />
+                        <Image
+                          src={heroImages[0]}
+                          alt="Destaque Donna Glamour"
+                          fill
+                          className="object-contain object-center"
+                          sizes="(max-width: 768px) 100vw, 40vw"
+                          priority
+                        />
+                      </>
                     ) : (
                       <div className="flex h-full items-center justify-center px-10 text-center">
                         <div>
@@ -394,7 +408,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="destaques" className="px-4 py-16 sm:px-6 lg:px-8">
+        <section id="destaques" className="hidden px-4 py-16 sm:px-6 md:block lg:px-8">
           <div className="mx-auto max-w-6xl">
             <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
               <div className="max-w-2xl space-y-3">
@@ -425,54 +439,56 @@ export default function Home() {
                 return (
                   <article
                     key={item.id}
-                    className="group overflow-hidden rounded-[1.8rem] border border-[var(--line)] bg-[var(--card)] shadow-[0_18px_40px_rgba(108,71,50,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_60px_rgba(108,71,50,0.14)]"
+                    className="group flex overflow-hidden rounded-[1.8rem] border border-[var(--line)] bg-[var(--card)] shadow-[0_18px_40px_rgba(108,71,50,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_60px_rgba(108,71,50,0.14)]"
                   >
-                    <Link href={`/product/${item.product.id}`} className="relative block aspect-[4/5] overflow-hidden bg-[var(--highlight)]">
-                      <Image
-                        src={imageUrl}
-                        alt={item.product.nome}
-                        fill
-                        className="object-cover transition duration-500 group-hover:scale-105"
-                        sizes="(max-width: 768px) 50vw, 25vw"
-                      />
-                      <div className="absolute left-4 top-4 rounded-full bg-white/88 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--primary)] shadow-sm">
-                        {comboItems.length > 0 && normalizeText(categoryName).includes("combo")
-                          ? "Combo"
-                          : categoryName}
-                      </div>
-                    </Link>
+                    <div className="flex min-h-full w-full flex-col">
+                      <Link href={`/product/${item.product.id}`} className="relative block aspect-[4/5] overflow-hidden bg-[var(--highlight)]">
+                        <Image
+                          src={imageUrl}
+                          alt={item.product.nome}
+                          fill
+                          className="object-cover transition duration-500 group-hover:scale-105"
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                        />
+                        <div className="absolute left-4 top-4 rounded-full bg-white/88 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--primary)] shadow-sm">
+                          {comboItems.length > 0 && normalizeText(categoryName).includes("combo")
+                            ? "Combo"
+                            : categoryName}
+                        </div>
+                      </Link>
 
-                    <div className="space-y-4 p-5">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted-ink)]">
-                          {categoryName}
+                      <div className="flex flex-1 flex-col gap-4 p-5">
+                        <div className="space-y-2">
+                          <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted-ink)]">
+                            {categoryName}
+                          </p>
+                          <h3 className="line-clamp-2 min-h-[3.2rem] text-lg font-semibold leading-7 text-[var(--primary)]">
+                            {item.product.nome}
+                          </h3>
+                          {item.product.descricao ? (
+                            <p className="line-clamp-2 min-h-[3rem] text-sm leading-6 text-[var(--muted-ink)]">
+                              {item.product.descricao}
+                            </p>
+                          ) : null}
+                        </div>
+
+                        <p className="text-xl font-semibold leading-7 text-[var(--primary)]">
+                          {getPriceLabel(item)}
                         </p>
-                        <h3 className="mt-2 text-lg font-semibold text-[var(--primary)]">
-                          {item.product.nome}
-                        </h3>
-                      </div>
 
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-xl font-semibold text-[var(--primary)]">
-                          {formatPrice(item.product.precoVenda)}
-                        </p>
-                        <Badge className="rounded-full bg-[var(--bg-soft)] px-3 py-1 text-[var(--accent)]">
-                          em destaque
-                        </Badge>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button asChild className="h-10 flex-1 rounded-full bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)]">
-                          <a href={createWhatsAppLink(item.product.nome)} target="_blank" rel="noreferrer">
-                            <MessageCircle className="size-4" />
-                            Quero saber mais
-                          </a>
-                        </Button>
-                        <Button asChild variant="outline" size="icon" className="size-10 rounded-full border-[var(--line-strong)] bg-white text-[var(--primary)] hover:bg-[var(--bg-soft)]">
-                          <Link href={`/product/${item.product.id}`} aria-label={`Ver ${item.product.nome}`}>
-                            <ArrowRight className="size-4" />
-                          </Link>
-                        </Button>
+                        <div className="mt-auto flex gap-2">
+                          <Button asChild className="h-10 flex-1 rounded-full bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)]">
+                            <a href={createWhatsAppLink(item.product.nome)} target="_blank" rel="noreferrer">
+                              <MessageCircle className="size-4" />
+                              Quero saber mais
+                            </a>
+                          </Button>
+                          <Button asChild variant="outline" size="icon" className="size-10 rounded-full border-[var(--line-strong)] bg-white text-[var(--primary)] hover:bg-[var(--bg-soft)]">
+                            <Link href={`/product/${item.product.id}`} aria-label={`Ver ${item.product.nome}`}>
+                              <ArrowRight className="size-4" />
+                            </Link>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -482,22 +498,22 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="catalogo" className="border-y border-[var(--line)] bg-white/65 px-4 py-16 backdrop-blur-sm sm:px-6 lg:px-8">
+        <section id="catalogo" className="border-y border-[var(--line)] bg-white/65 px-3 py-10 backdrop-blur-sm sm:px-6 sm:py-14 lg:px-8 lg:py-16">
           <div className="mx-auto max-w-6xl">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div className="max-w-2xl space-y-3">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl space-y-2 sm:space-y-3">
                 <Badge className="rounded-full bg-white px-4 py-1.5 text-[11px] uppercase tracking-[0.28em] text-[var(--primary)] shadow-sm">
                   Nosso catálogo
                 </Badge>
-                <h2 className="font-[family-name:var(--font-display)] text-4xl leading-none text-[var(--primary)] sm:text-5xl">
+                <h2 className="font-[family-name:var(--font-display)] text-3xl leading-none text-[var(--primary)] sm:text-5xl">
                   Encontre seu próximo look.
                 </h2>
-                <p className="text-base leading-7 text-[var(--muted-ink)]">
+                <p className="text-sm leading-6 text-[var(--muted-ink)] sm:text-base sm:leading-7">
                   Escolha a categoria, veja as peças e fale com a loja quando quiser.
                 </p>
               </div>
 
-              <div className="w-full max-w-md rounded-[1.4rem] border border-[var(--line)] bg-white p-2 shadow-sm">
+              <div className="w-full max-w-md rounded-[1rem] border border-[var(--line)] bg-white p-2 shadow-sm sm:rounded-[1.4rem]">
                 <div className="flex items-center gap-3 rounded-[1rem] bg-[var(--bg-soft)] px-3 py-2">
                   <Search className="size-4 text-[var(--muted-ink)]" />
                   <Input
@@ -510,7 +526,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-8 flex gap-3 overflow-x-auto pb-1">
+            <div className="mt-6 flex gap-2 overflow-x-auto pb-1 sm:mt-8 sm:gap-3">
               {catalogTabs.map((tab) => {
                 const isActive = activeTab === tab.key;
 
@@ -519,7 +535,7 @@ export default function Home() {
                     key={tab.key}
                     type="button"
                     onClick={() => setActiveTab(tab.key)}
-                    className={`rounded-full border px-4 py-2 text-sm font-medium whitespace-nowrap transition ${
+                    className={`rounded-full border px-3 py-2 text-sm font-medium whitespace-nowrap transition sm:px-4 ${
                       isActive
                         ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[0_12px_28px_rgba(108,71,50,0.22)]"
                         : "border-[var(--line-strong)] bg-white text-[var(--primary)] hover:bg-[var(--bg-soft)]"
@@ -531,55 +547,62 @@ export default function Home() {
               })}
             </div>
 
-            <div className="mt-6 flex items-center justify-between gap-4 text-sm text-[var(--muted-ink)]">
+            <div className="mt-5 flex items-center justify-between gap-4 text-sm text-[var(--muted-ink)] sm:mt-6">
               <p>{filteredItems.length} itens encontrados no catálogo</p>
-              <Link href="#contato" className="font-medium text-[var(--primary)] underline-offset-4 hover:underline">
+              <Link href="#contato" className="hidden font-medium text-[var(--primary)] underline-offset-4 hover:underline sm:inline">
                 Prefere atendimento rápido? Chame no WhatsApp
               </Link>
             </div>
 
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-5 xl:grid-cols-4">
               {filteredItems.map((item) => {
                 const imageUrl = item.product.imagesUrl[0] || "/logo.svg";
 
                 return (
                   <article
                     key={item.id}
-                    className="overflow-hidden rounded-[1.6rem] border border-[var(--line)] bg-[var(--card)] shadow-[0_14px_34px_rgba(108,71,50,0.08)]"
+                    className="flex overflow-hidden rounded-[1rem] border border-[var(--line)] bg-[var(--card)] shadow-[0_10px_24px_rgba(108,71,50,0.08)] sm:rounded-[1.6rem] sm:shadow-[0_14px_34px_rgba(108,71,50,0.08)]"
                   >
-                    <Link href={`/product/${item.product.id}`} className="relative block aspect-square overflow-hidden bg-[var(--highlight)]">
-                      <Image
-                        src={imageUrl}
-                        alt={item.product.nome}
-                        fill
-                        className="object-cover transition duration-500 hover:scale-105"
-                        sizes="(max-width: 768px) 50vw, 25vw"
-                      />
-                    </Link>
+                    <div className="flex min-h-full w-full flex-col">
+                      <Link href={`/product/${item.product.id}`} className="relative block aspect-[4/5] overflow-hidden bg-[var(--highlight)] sm:aspect-square">
+                        <Image
+                          src={imageUrl}
+                          alt={item.product.nome}
+                          fill
+                          className="object-cover transition duration-500 hover:scale-105"
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                        />
+                      </Link>
 
-                    <div className="space-y-4 p-5">
-                      <div className="space-y-2">
-                        <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted-ink)]">
-                          {item.product.category?.nome || "Catálogo"}
-                        </p>
-                        <h3 className="text-lg font-semibold text-[var(--primary)]">
-                          {item.product.nome}
-                        </h3>
-                        <p className="text-xl font-semibold text-[var(--primary)]">
-                          {formatPrice(item.product.precoVenda)}
-                        </p>
-                      </div>
+                      <div className="flex flex-1 flex-col gap-3 p-3 sm:gap-4 sm:p-5">
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--muted-ink)] sm:text-xs sm:tracking-[0.22em]">
+                            {item.product.category?.nome || "Catálogo"}
+                          </p>
+                          <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-5 text-[var(--primary)] sm:min-h-[3.2rem] sm:text-lg sm:leading-7">
+                            {item.product.nome}
+                          </h3>
+                          {item.product.descricao ? (
+                            <p className="hidden line-clamp-2 min-h-[3rem] text-sm leading-6 text-[var(--muted-ink)] sm:block">
+                              {item.product.descricao}
+                            </p>
+                          ) : null}
+                          <p className="text-base font-semibold leading-5 text-[var(--primary)] sm:text-xl sm:leading-7">
+                            {getPriceLabel(item)}
+                          </p>
+                        </div>
 
-                      <div className="flex gap-2">
-                        <Button asChild className="h-10 flex-1 rounded-full bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)]">
-                          <a href={createWhatsAppLink(item.product.nome)} target="_blank" rel="noreferrer">
-                            <MessageCircle className="size-4" />
-                            Comprar
-                          </a>
-                        </Button>
-                        <Button asChild variant="outline" className="h-10 rounded-full border-[var(--line-strong)] bg-white px-4 text-[var(--primary)] hover:bg-[var(--bg-soft)]">
-                          <Link href={`/product/${item.product.id}`}>Detalhes</Link>
-                        </Button>
+                        <div className="mt-auto flex gap-2">
+                          <Button asChild className="h-9 flex-1 rounded-full bg-[var(--primary)] px-2 text-xs text-white hover:bg-[var(--primary-dark)] sm:h-10 sm:text-sm">
+                            <a href={createWhatsAppLink(item.product.nome)} target="_blank" rel="noreferrer">
+                              <MessageCircle className="size-3.5 sm:size-4" />
+                              Comprar
+                            </a>
+                          </Button>
+                          <Button asChild variant="outline" className="hidden h-10 rounded-full border-[var(--line-strong)] bg-white px-4 text-[var(--primary)] hover:bg-[var(--bg-soft)] sm:inline-flex">
+                            <Link href={`/product/${item.product.id}`}>Detalhes</Link>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </article>

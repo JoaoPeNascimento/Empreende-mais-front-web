@@ -27,6 +27,9 @@ const formatPrice = (value: number) =>
     currency: "BRL",
   }).format(value);
 
+const getPriceLabel = (product: Product) =>
+  product.precoLabel || formatPrice(product.precoVenda);
+
 const createWhatsAppLink = (productName: string) =>
   `https://wa.me/558199025395?text=${encodeURIComponent(
     `Oi! Vim pelo catálogo da Donna Glamour e quero saber mais sobre ${productName}.`
@@ -56,7 +59,8 @@ export default function ProductPage({
     loadProduct();
   }, [productId]);
 
-  const sizes = useMemo(() => ["P", "M", "G", "GG"], []);
+  const sizes = useMemo(() => product?.tamanhos || [], [product]);
+  const colors = useMemo(() => product?.cores || [], [product]);
 
   if (error) {
     return (
@@ -169,29 +173,50 @@ export default function ProductPage({
                 <h1 className="font-[family-name:var(--font-display)] text-4xl leading-none text-[var(--primary)] sm:text-5xl">
                   {product.nome}
                 </h1>
-                <p className="text-3xl font-semibold text-[var(--ink)]">{formatPrice(precoVenda)}</p>
+                <p className="text-3xl font-semibold leading-tight text-[var(--ink)]">
+                  {getPriceLabel(product)}
+                </p>
                 <p className="leading-7 text-[var(--muted-ink)]">
                   {product.descricao ||
                     "Peça selecionada para quem busca estilo, praticidade e um look bonito para o dia a dia."}
                 </p>
               </div>
 
-              <div className="rounded-xl bg-[var(--bg-soft)] p-4">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted-ink)]">
-                  Tamanhos
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {sizes.map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      className="rounded-full border border-[var(--line-strong)] bg-white px-4 py-2 text-sm font-medium text-[var(--primary)] transition hover:border-[var(--accent)] hover:bg-[var(--highlight)]"
-                    >
-                      {size}
-                    </button>
-                  ))}
+              {colors.length > 0 ? (
+                <div className="rounded-xl bg-[var(--bg-soft)] p-4">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted-ink)]">
+                    Cores
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {colors.map((color) => (
+                      <span
+                        key={color}
+                        className="rounded-full border border-[var(--line-strong)] bg-white px-4 py-2 text-sm font-medium text-[var(--primary)]"
+                      >
+                        {color}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
+
+              {sizes.length > 0 ? (
+                <div className="rounded-xl bg-[var(--bg-soft)] p-4">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted-ink)]">
+                    Tamanhos
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {sizes.map((size) => (
+                      <span
+                        key={size}
+                        className="rounded-full border border-[var(--line-strong)] bg-white px-4 py-2 text-sm font-medium text-[var(--primary)]"
+                      >
+                        {size}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <Button

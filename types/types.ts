@@ -4,6 +4,7 @@ export interface Product {
   descricao?: string | null;
   marca: string;
   precoVenda: number;
+  precoLabel?: string;
   precoCusto: number;
   ativo: boolean;
   imagesUrl: string[];
@@ -11,6 +12,8 @@ export interface Product {
   updatedAt: string;
   category: Category;
   inventory?: Inventory | null;
+  tamanhos?: string[];
+  cores?: string[];
 }
 
 export interface Inventory {

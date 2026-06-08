@@ -62,9 +62,9 @@ const Checkout = () => {
 
             {cart.length > 0 ? (
               <div className="space-y-3">
-                {cart.map((item) => (
+                {cart.map((item, index) => (
                   <CheckoutProductCard
-                    key={`${item.id}-${item.name}`}
+                    key={`${item.id}-${item.name}-${index}`}
                     id={item.id}
                     name={item.name}
                     price={item.price}
